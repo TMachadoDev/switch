@@ -50,9 +50,9 @@ export default function Switch() {
   return (
     <div className="flex flex-col items-center gap-4">
       <motion.button
-        className={`flex w-20 h-10 rounded-full p-2 ${current.trackBg} ${
-          isAnimating ? "pointer-events-none opacity-50" : "cursor-pointer"
-        }`}
+        className={`flex w-20 h-10 rounded-full  p-2 focus:outline-2 focus:outline-offset-2 focus:outline-emerald-500  ${
+          current.trackBg
+        } ${isAnimating ? "pointer-events-none" : "cursor-pointer"}`}
         onClick={toggle}
         onMouseEnter={() => setIsHovering(true)}
         onMouseLeave={() => {
@@ -68,7 +68,6 @@ export default function Switch() {
           stiffness: 600,
           damping: 30,
         }}
-        whileTap={!isAnimating ? { scale: 0.95 } : {}}
       >
         <motion.div
           className={`rounded-full flex items-center justify-center ${current.knobSize} ${current.knobTranslate} bg-white shadow-md`}
