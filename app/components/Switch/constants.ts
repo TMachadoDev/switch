@@ -4,7 +4,7 @@ export const switchStates = {
     knobSize: "size-6",
     knobTranslate: "translate-x-0",
     knobInnerSize: "size-2",
-    knobInnerBg: "bg-gray-400",
+    knobInnerBg: "bg-gray-200",
   },
   intermediate1: {
     trackBg: "bg-gray-200",
@@ -39,6 +39,6 @@ export const switchStates = {
     knobSize: "size-6",
     knobTranslate: "translate-x-10",
     knobInnerSize: "size-2",
-    knobInnerBg: "bg-emerald-600",
+    knobInnerBg: "bg-emerald-500",
   },
 };

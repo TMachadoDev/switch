@@ -6,24 +6,33 @@ import { switchStates } from "./constants";
 export default function Switch() {
   const [state, setState] = useState<keyof typeof switchStates>("off");
   const [isAnimating, setIsAnimating] = useState(false);
+  const [isHovering, setIsHovering] = useState(false);
+  const [isPressed, setIsPressed] = useState(false);
 
   const isOn = state === "on";
-  const current = switchStates[state];
+
+  const getVisualState = () => {
+    if (isAnimating) return state;
+
+    if (isPressed) {
+      return isOn ? "intermediate3" : "intermediate2";
+    }
+
+    if (isHovering) {
+      return isOn ? "intermediate4" : "intermediate1";
+    }
+
+    return state;
+  };
+
+  const current = switchStates[getVisualState()];
 
   const toggle = () => {
     if (isAnimating) return;
     setIsAnimating(true);
-
     const sequence = !isOn
-      ? [
-          "intermediate1",
-          "intermediate2",
-          "intermediate3",
-          "intermediate4",
-          "on",
-        ]
+      ? ["intermediate2", "intermediate3", "on"]
       : ["intermediate3", "intermediate2", "intermediate1", "off"];
-
     sequence
       .reduce((prev, next) => {
         return prev.then(() => {
@@ -45,6 +54,13 @@ export default function Switch() {
           isAnimating ? "pointer-events-none opacity-50" : "cursor-pointer"
         }`}
         onClick={toggle}
+        onMouseEnter={() => setIsHovering(true)}
+        onMouseLeave={() => {
+          setIsHovering(false);
+          setIsPressed(false);
+        }}
+        onMouseDown={() => setIsPressed(true)}
+        onMouseUp={() => setIsPressed(false)}
         layout
         transition={{
           duration: 0.12,
