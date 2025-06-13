@@ -1,35 +1,50 @@
+"use client";
+import { useState } from "react";
 import { motion } from "framer-motion";
-import type { SwitchProps } from "./types";
+import { switchStates } from "./constants";
 
-export default function SwitchView({
-  current,
-  toggle,
-  isAnimating,
+export default function Switch() {
+  const [state, setState] = useState<keyof typeof switchStates>("off");
+  const [isAnimating, setIsAnimating] = useState(false);
 
-  disabled = false,
-}: SwitchProps) {
+  const isOn = state === "on";
+  const current = switchStates[state];
+
+  const toggle = () => {
+    if (isAnimating) return;
+    setIsAnimating(true);
+
+    const sequence = !isOn
+      ? [
+          "intermediate1",
+          "intermediate2",
+          "intermediate3",
+          "intermediate4",
+          "on",
+        ]
+      : ["intermediate3", "intermediate2", "intermediate1", "off"];
+
+    sequence
+      .reduce((prev, next) => {
+        return prev.then(() => {
+          return new Promise<void>((resolve) => {
+            setState(next as keyof typeof switchStates);
+            setTimeout(resolve, 75);
+          });
+        });
+      }, Promise.resolve())
+      .then(() => {
+        setIsAnimating(false);
+      });
+  };
+
   return (
-    <motion.button
-      className={`flex w-20 h-10"  rounded-full p-2 transition-all duration-100 ${
-        current.trackBg
-      } ${
-        isAnimating || disabled
-          ? "pointer-events-none opacity-50"
-          : "cursor-pointer"
-      }`}
-      onClick={toggle}
-      layout
-      transition={{
-        duration: 0.12,
-        type: "spring",
-        stiffness: 600,
-        damping: 30,
-      }}
-      whileTap={!isAnimating && !disabled ? { scale: 0.95 } : {}}
-      disabled={disabled}
-    >
-      <motion.div
-        className={`rounded-full flex items-center justify-center ${current.knobSize} ${current.knobTranslate} bg-white shadow-md`}
+    <div className="flex flex-col items-center gap-4">
+      <motion.button
+        className={`flex w-20 h-10 rounded-full p-2 ${current.trackBg} ${
+          isAnimating ? "pointer-events-none opacity-50" : "cursor-pointer"
+        }`}
+        onClick={toggle}
         layout
         transition={{
           duration: 0.12,
@@ -37,16 +52,26 @@ export default function SwitchView({
           stiffness: 600,
           damping: 30,
         }}
+        whileTap={!isAnimating ? { scale: 0.95 } : {}}
       >
         <motion.div
-          className={`rounded-full ${current.knobInnerSize} ${current.knobInnerBg}`}
+          className={`rounded-full flex items-center justify-center ${current.knobSize} ${current.knobTranslate} bg-white shadow-md`}
           layout
           transition={{
             duration: 0.12,
-            ease: "easeOut",
+            type: "spring",
+            stiffness: 600,
+            damping: 30,
           }}
-        />
-      </motion.div>
-    </motion.button>
+        >
+          <motion.div
+            className={`rounded-full ${current.knobInnerSize} ${current.knobInnerBg}`}
+            layout
+            transition={{ duration: 0.12, ease: "easeOut" }}
+          />
+        </motion.div>
+      </motion.button>
+      <span className="text-xl">{isOn ? "Ligado ✅" : "Desligado ❌"}</span>
+    </div>
   );
 }
